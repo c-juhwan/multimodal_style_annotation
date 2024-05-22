@@ -71,7 +71,7 @@ def testing(args: argparse.Namespace) -> None:
     elif args.model_type == 'paligemma':
         from model.visual_qa.paligemma import PaliGemmaVQAModel
         model = PaliGemmaVQAModel(args)
-    elif args.model_type in ['gpt-4o', 'gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09']:
+    elif args.model_type in ['gpt-4o', 'gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-0125-preview', 'gpt-4-1106-vision-preview']:
         from model.visual_qa.gpt4 import GPT4VQAModel
         model = GPT4VQAModel(args)
     elif args.model_type in ['claude-3-opus-20240229', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307']:
@@ -86,7 +86,7 @@ def testing(args: argparse.Namespace) -> None:
 
     # Load model weights
     if args.model_type not in ['blip_tuned', 'blip2', 'llava_mistral', 'llava_llama3', 'paligemma',
-                               'gpt-4o', 'gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09',
+                               'gpt-4o', 'gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-0125-preview', 'gpt-4-1106-vision-preview',
                                'claude-3-opus-20240229', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307',
                                'gemini-1.0-pro-vision-latest', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest']:
         write_log(logger, "Loading model weights")

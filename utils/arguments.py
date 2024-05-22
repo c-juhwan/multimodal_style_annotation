@@ -46,7 +46,7 @@ class ArgParser():
                                  help='Name of the project.')
         model_type_list = ['vit', 'vit_cross', 'clip', 'clip_frozen', 'blip', 'blip_tuned', 'blip2', 'vilt',
                            'llava_mistral', 'llava_llama3', 'paligemma', # Open-source MLLM
-                           'gpt-4o', 'gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', # OpenAI GPT
+                           'gpt-4o', 'gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-0125-preview', 'gpt-4-1106-vision-preview', # OpenAI GPT
                            'claude-3-opus-20240229', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307', # Anthropic Claude
                            'gemini-1.0-pro-vision-latest', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest']
 

@@ -69,7 +69,7 @@ def training(args: argparse.Namespace) -> None:
     elif args.model_type in ['clip', 'clip_frozen']:
         from model.visual_qa.clip import CLIPVQAModel
         model = CLIPVQAModel(args)
-    elif args.model_type in ['blip', 'blip_tuned']:
+    elif args.model_type == 'blip':
         from model.visual_qa.blip import BLIPVQAModel
         model = BLIPVQAModel(args)
     elif args.model_type == 'blip2':

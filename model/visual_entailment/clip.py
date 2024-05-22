@@ -20,6 +20,8 @@ class CLIPVEModel(nn.Module):
 
         self.image_encoder = CLIPVisionModel.from_pretrained("openai/clip-vit-base-patch16")
         self.text_encoder = BertModel.from_pretrained("bert-base-uncased")
+        if self.args.model_type == 'clip_frozen':
+            self.image_encoder.requires_grad_(False)
 
         self.transform_train = transforms.Compose([
             transforms.Resize(args.image_resize_size), # Resize to 256x256
