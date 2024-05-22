@@ -27,6 +27,8 @@ def main(args: argparse.Namespace) -> None:
                     from task.captioning.train import training as job
             elif args.job == 'testing':
                 from task.captioning.test import testing as job
+            elif args.job == 'annotating':
+                from task.captioning.annotating import annotating_captioning as job
             else:
                 raise ValueError(f'Invalid job: {args.job}')
         elif args.task == 'visual_qa':
@@ -36,6 +38,8 @@ def main(args: argparse.Namespace) -> None:
                 from task.visual_qa.train import training as job
             elif args.job == 'testing':
                 from task.visual_qa.test import testing as job
+            elif args.job == 'annotating':
+                from task.visual_qa.annotating2 import annotating_vqa as job
             else:
                 raise ValueError(f'Invalid job: {args.job}')
         elif args.task == 'visual_entailment':
@@ -45,6 +49,8 @@ def main(args: argparse.Namespace) -> None:
                 from task.visual_entailment.train import training as job
             elif args.job == 'testing':
                 from task.visual_entailment.test import testing as job
+            elif args.job == 'annotating':
+                from task.visual_entailment.annotating import annotating_ve as job
             else:
                 raise ValueError(f'Invalid job: {args.job}')
         else:

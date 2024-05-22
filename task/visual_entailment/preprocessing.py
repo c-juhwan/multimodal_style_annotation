@@ -87,7 +87,7 @@ def load_data(args: argparse.Namespace):
         raw_dataset = load_dataset('HuggingFaceM4/SNLI-VE', data_dir=os.path.abspath("./task/visual_entailment/"))
         sports_word_list = ['soccer', 'football']
 
-        # Train data 4059 -> 8:1:1
+        # Train data that have sports-related words -> 8:1:1 split
         for data in tqdm(raw_dataset['train']):
             if any(word in data['premise'] for word in sports_word_list):
                 data_dict['image'].append(data['image'].convert('RGB').resize((args.image_resize_size, args.image_resize_size)))
