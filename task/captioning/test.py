@@ -58,12 +58,21 @@ def testing(args: argparse.Namespace) -> None:
     elif args.model_type == 'blip2':
         from model.captioning.blip2 import BLIP2CaptioningModel
         model = BLIP2CaptioningModel(args)
+    elif args.model_type == 'llava_mistral':
+        from model.captioning.llava_mistral import LLaVAMistralCaptioningModel
+        model = LLaVAMistralCaptioningModel(args)
+    elif args.model_type == 'llava_llama3':
+        from model.captioning.llava_llama3 import LLaVALLaMA3CaptioningModel
+        model = LLaVALLaMA3CaptioningModel(args)
+    elif args.model_type == 'paligemma':
+        from model.captioning.paligemma import PaliGemmaCaptioningModel
+        model = PaliGemmaCaptioningModel(args)
     else:
         raise ValueError(f"Invalid model type: {args.model_type}")
     model.to(device)
 
     # Load model weights
-    if args.model_type not in ['blip_tuned', 'blip2']:
+    if args.model_type not in ['blip_tuned', 'blip2', 'llava_mistral', 'llava_llama3', 'paligemma']:
         write_log(logger, "Loading model weights")
         load_model_name = os.path.join(args.model_path, args.task, args.task_dataset,
                                     f'{args.model_type}_final_model.pt')

@@ -14,12 +14,13 @@ class ArgParser():
         task_list = ['captioning', 'visual_qa', 'visual_entailment']
         self.parser.add_argument('--task', type=str, choices=task_list, default='captioning',
                                  help='Task to do; Must be given.')
-        job_list = ['preprocessing', 'training', 'resume_training', 'testing', 'zs_inference']
+        job_list = ['preprocessing', 'training', 'resume_training', 'testing', 'zs_inference', 'annotating']
         self.parser.add_argument('--job', type=str, choices=job_list, default='training',
                                  help='Job to do; Must be given.')
-        dataset_list = ['flickr8k', 'flickr30k', 'coco_karpathy', 'uit_viic_en_ori',
-                        'vqa_v2', 'uit_viic_vqa_ori',
-                        'snli_ve', 'snli_ve_sports_ori']
+        dataset_list = ['flickr8k', 'flickr30k', 'coco_karpathy',
+                        'uit_viic_en_ori', 'uit_viic_en_cartoon', 'uit_viic_en_pencil', 'uit_viic_en_oil',
+                        'vqa_v2', 'uit_viic_vqa_ori', 'uit_viic_vqa_cartoon', 'uit_viic_vqa_pencil', 'uit_viic_vqa_oil',
+                        'snli_ve', 'snli_ve_sports_ori', 'snli_ve_sports_cartoon', 'snli_ve_sports_pencil', 'snli_ve_sports_oil']
         self.parser.add_argument('--task_dataset', type=str, choices=dataset_list, default='uit_viic_en_ori',
                                  help='Dataset for the task; Must be given.')
         self.parser.add_argument('--test_dataset', type=str, choices=dataset_list, default='uit_viic_en_ori',
@@ -43,15 +44,16 @@ class ArgParser():
         # Model - Basic arguments
         self.parser.add_argument('--proj_name', type=str, default=self.proj_name,
                                  help='Name of the project.')
-        model_type_list = ['vit', 'vit_cross', 'clip', 'clip_frozen', 'blip', 'blip_tuned', 'blip2', 'vilt']
+        model_type_list = ['vit', 'vit_cross', 'clip', 'clip_frozen', 'blip', 'blip_tuned', 'blip2', 'vilt',
+                           'llava_mistral', 'llava_llama3', 'paligemma']
         self.parser.add_argument('--model_type', type=str, choices=model_type_list, default='clip',
                                  help='Type of the classification model to use.')
         self.parser.add_argument('--model_ispretrained', type=parse_bool, default=True,
                                  help='Whether to use pretrained model; Default is True')
         self.parser.add_argument('--min_seq_len', type=int, default=4,
                                  help='Minimum sequence length of the input; Default is 4')
-        self.parser.add_argument('--max_seq_len', type=int, default=30,
-                                 help='Maximum sequence length of the input; Default is 30')
+        self.parser.add_argument('--max_seq_len', type=int, default=50,
+                                 help='Maximum sequence length of the input; Default is 50')
         self.parser.add_argument('--dropout_rate', type=float, default=0.0,
                                  help='Dropout rate of the model; Default is 0.0')
 
@@ -121,6 +123,10 @@ class ArgParser():
                                  help='Number of beams for beam search; Default is 5')
 
         # Other arguments - Device, Seed, Logging, etc.
+        self.parser.add_argument('--gpt_model_version', type=str, default='gpt-4o-2024-05-13')
+        self.parser.add_argument('--dalle_model_version', type=str, default='dall-e-3')
+        self.parser.add_argument('--error_patience', type=int, default=10,
+                                 help='Error patience; Default is 10')
         self.parser.add_argument('--device', type=str, default='cuda',
                                  help='Device to use for training; Default is cuda')
         self.parser.add_argument('--seed', type=int, default=None,

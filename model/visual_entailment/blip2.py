@@ -73,11 +73,11 @@ class BLIP2VEModel(nn.Module):
         #     else:
         #         preds.append(1)
         for text in generated_text:
-            if 'true' in text.lower():
+            if 'true' in text.lower() or 'yes' in text.lower():
                 preds.append(0)
             elif 'un' in text.lower():
                 preds.append(1)
-            elif 'fal' in text.lower():
+            elif 'fal' in text.lower() or 'no' in text.lower():
                 preds.append(2)
             else:
                 preds.append(1)

@@ -41,7 +41,7 @@ def preprocessing(args: argparse.Namespace):
             'caption': [],
             'domain_id': [],
         },
-        'test': { # Only for UIT-VIIC-EN-ORI
+        'test': { # Only for uit_viic_vqa_ori
             'image': [],
             'image_id': [],
             'question_id': [],
@@ -159,7 +159,7 @@ def load_data(args: argparse.Namespace):
             image_id_list.append(fileid)
             split_list.append(each_data['split'])
 
-        for vqa_split in ['train', 'validation', 'testdev', 'test']:
+        for vqa_split in ['train', 'validation']: # We don't include testdev/test set as their answer is not available and their image is not in the captioning dataset
             for data in tqdm(raw_dataset[vqa_split]):
                 # We will use only yes/no questions
                 if data['image_id'] in image_id_list and data['answer_type'] == 'yes/no':
@@ -176,7 +176,7 @@ def load_data(args: argparse.Namespace):
                     data_dict['answer_type'].append(data['answer_type'])
                     data_dict['caption'].append(caption_data[image_id_list.index(data['image_id'])]['captions'][0])
                     data_dict['domain_id'].append(0) # 0: normal, realistic image
-                    data_dict['split'].append(split_list[image_id_list.index(data['image_id'])])
+                    data_dict['split'].append(split_list[image_id_list.index(data['image_id'])]) # Use the split from captioning dataset
     else:
         raise NotImplementedError(f'Not implemented dataset: {args.task_dataset}')
 

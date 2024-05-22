@@ -62,12 +62,21 @@ def testing(args: argparse.Namespace) -> None:
     elif args.model_type == 'vilt':
         from model.visual_qa.vilt import ViltVQAModel
         model = ViltVQAModel(args)
+    elif args.model_type == 'llava_mistral':
+        from model.visual_qa.llava_mistral import LLaVAMistralVQAModel
+        model = LLaVAMistralVQAModel(args)
+    elif args.model_type == 'llava_llama3':
+        from model.visual_qa.llava_llama3 import LLaVALLaMA3VQAModel
+        model = LLaVALLaMA3VQAModel(args)
+    elif args.model_type == 'paligemma':
+        from model.visual_qa.paligemma import PaliGemmaVQAModel
+        model = PaliGemmaVQAModel(args)
     else:
         raise ValueError(f"Invalid model type: {args.model_type}")
     model.to(device)
 
     # Load model weights
-    if args.model_type not in ['blip_tuned', 'vilt', 'blip2']:
+    if args.model_type not in ['blip_tuned', 'vilt', 'blip2', 'llava_mistral', 'llava_llama3', 'paligemma']:
         write_log(logger, "Loading model weights")
         load_model_name = os.path.join(args.model_path, args.task, args.task_dataset,
                                     f'{args.model_type}_final_model.pt')
