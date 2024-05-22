@@ -99,12 +99,12 @@ def get_tb_exp_name(args: argparse.Namespace):
     if args.job in ['training', 'resume_training']:
         exp_name += 'TRAIN - '
         exp_name += "MODEL=%s - " % args.model_type.upper()
-        exp_name += "DATA=%s - " % args.task_dataset.upper()
+        exp_name += "DATA=%s - " % str(args.task_dataset).upper()
         exp_name += "DESC=%s - " % args.description
     elif args.job == 'testing':
         exp_name += 'TEST - '
         exp_name += "MODEL=%s - " % args.model_type.upper()
-        exp_name += "DATA=%s - " % args.task_dataset.upper()
+        exp_name += "DATA=%s - " % str(args.task_dataset).upper()
         exp_name += "DESC=%s - " % args.description
     exp_name += "TS=%s" % ts
 
@@ -117,7 +117,7 @@ def get_wandb_exp_name(args: argparse.Namespace):
 
     exp_name = str()
     exp_name += "%s - " % args.task.upper()
-    exp_name += "%s / " % args.task_dataset.upper()
+    exp_name += "%s / " % str(args.task_dataset).upper()
     exp_name += "%s" % args.model_type.upper()
 
     if args.job in ['training', 'resume_training']:

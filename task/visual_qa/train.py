@@ -37,8 +37,19 @@ def training(args: argparse.Namespace) -> None:
     # Load dataset and define dataloader
     write_log(logger, "Loading dataset...")
     dataset_dict, dataloader_dict = {}, {}
-    dataset_dict['train'] = VQADataset(os.path.join(args.preprocess_path, args.task_dataset, f'train_data.pkl'))
-    dataset_dict['valid'] = VQADataset(os.path.join(args.preprocess_path, args.task_dataset, f'valid_data.pkl'))
+
+    if type(args.task_dataset) == list: # Multiple datasets
+        each_train_dataset = [VQADataset(os.path.join(args.preprocess_path, each_dataset, f'train_data.pkl')) for each_dataset in args.task_dataset]
+        each_valid_dataset = [VQADataset(os.path.join(args.preprocess_path, each_dataset, f'valid_data.pkl')) for each_dataset in args.task_dataset]
+
+        dataset_dict['train'] = each_train_dataset[0]
+        dataset_dict['valid'] = each_valid_dataset[0]
+        for each_train_dataset, each_valid_dataset in zip(each_train_dataset[1:], each_valid_dataset[1:]):
+            dataset_dict['train'].data_list += each_train_dataset.data_list
+            dataset_dict['valid'].data_list += each_valid_dataset.data_list
+    else:
+        dataset_dict['train'] = VQADataset(os.path.join(args.preprocess_path, args.task_dataset, f'train_data.pkl'))
+        dataset_dict['valid'] = VQADataset(os.path.join(args.preprocess_path, args.task_dataset, f'valid_data.pkl'))
     dataloader_dict['train'] = DataLoader(dataset_dict['train'], batch_size=args.batch_size, num_workers=args.num_workers,
                                           shuffle=True, pin_memory=True, drop_last=True, collate_fn=collate_fn)
     dataloader_dict['valid'] = DataLoader(dataset_dict['valid'], batch_size=args.batch_size, num_workers=args.num_workers,

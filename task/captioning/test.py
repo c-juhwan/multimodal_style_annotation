@@ -67,12 +67,24 @@ def testing(args: argparse.Namespace) -> None:
     elif args.model_type == 'paligemma':
         from model.captioning.paligemma import PaliGemmaCaptioningModel
         model = PaliGemmaCaptioningModel(args)
+    elif args.model_type in ['gpt-4o', 'gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09']:
+        from model.captioning.gpt4 import GPT4CaptioningModel
+        model = GPT4CaptioningModel(args)
+    elif args.model_type in ['claude-3-opus-20240229', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307']:
+        from model.captioning.claude import ClaudeCaptioningModel
+        model = ClaudeCaptioningModel(args)
+    elif args.model_type in ['gemini-1.0-pro-vision-latest', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest']:
+        from model.captioning.gemini import GeminiCaptioningModel
+        model = GeminiCaptioningModel(args)
     else:
         raise ValueError(f"Invalid model type: {args.model_type}")
     model.to(device)
 
     # Load model weights
-    if args.model_type not in ['blip_tuned', 'blip2', 'llava_mistral', 'llava_llama3', 'paligemma']:
+    if args.model_type not in ['blip_tuned', 'blip2', 'llava_mistral', 'llava_llama3', 'paligemma',
+                               'gpt-4o', 'gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09',
+                               'claude-3-opus-20240229', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307',
+                               'gemini-1.0-pro-vision-latest', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest']:
         write_log(logger, "Loading model weights")
         load_model_name = os.path.join(args.model_path, args.task, args.task_dataset,
                                     f'{args.model_type}_final_model.pt')

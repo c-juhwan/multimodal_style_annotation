@@ -67,5 +67,8 @@ if __name__ == '__main__':
     parser = ArgParser()
     args = parser.get_args()
 
+    if len(args.task_dataset) == 1:
+        args.task_dataset = args.task_dataset[0]
+
     # Run the main function
     main(args)

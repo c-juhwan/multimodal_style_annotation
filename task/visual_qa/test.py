@@ -35,7 +35,7 @@ def testing(args: argparse.Namespace) -> None:
 
     # Load dataset and define dataloader
     write_log(logger, "Loading dataset...")
-    if args.test_dataset == 'uit_viic_vqa_ori':
+    if args.test_dataset in ['uit_viic_vqa_ori', 'uit_viic_vqa_cartoon', 'uit_viic_vqa_pencil', 'uit_viic_vqa_oil']:
         dataset_test = VQADataset(os.path.join(args.preprocess_path, args.test_dataset, f'test_data.pkl'))
     elif args.test_dataset == 'vqa_v2':
         dataset_test = VQADataset(os.path.join(args.preprocess_path, args.test_dataset, f'testdev_data.pkl'))
@@ -71,12 +71,24 @@ def testing(args: argparse.Namespace) -> None:
     elif args.model_type == 'paligemma':
         from model.visual_qa.paligemma import PaliGemmaVQAModel
         model = PaliGemmaVQAModel(args)
+    elif args.model_type in ['gpt-4o', 'gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09']:
+        from model.visual_qa.gpt4 import GPT4VQAModel
+        model = GPT4VQAModel(args)
+    elif args.model_type in ['claude-3-opus-20240229', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307']:
+        from model.visual_qa.claude import ClaudeVQAModel
+        model = ClaudeVQAModel(args)
+    elif args.model_type in ['gemini-1.0-pro-vision-latest', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest']:
+        from model.visual_qa.gemini import GeminiVQAModel
+        model = GeminiVQAModel(args)
     else:
         raise ValueError(f"Invalid model type: {args.model_type}")
     model.to(device)
 
     # Load model weights
-    if args.model_type not in ['blip_tuned', 'vilt', 'blip2', 'llava_mistral', 'llava_llama3', 'paligemma']:
+    if args.model_type not in ['blip_tuned', 'blip2', 'llava_mistral', 'llava_llama3', 'paligemma',
+                               'gpt-4o', 'gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09',
+                               'claude-3-opus-20240229', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307',
+                               'gemini-1.0-pro-vision-latest', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest']:
         write_log(logger, "Loading model weights")
         load_model_name = os.path.join(args.model_path, args.task, args.task_dataset,
                                     f'{args.model_type}_final_model.pt')
