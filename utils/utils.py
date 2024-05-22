@@ -99,12 +99,12 @@ def get_tb_exp_name(args: argparse.Namespace):
     if args.job in ['training', 'resume_training']:
         exp_name += 'TRAIN - '
         exp_name += "MODEL=%s - " % args.model_type.upper()
-        exp_name += "DATA=%s - " % str(args.task_dataset).upper()
+        exp_name += "DATA=%s - " % list_to_str_wandb(args.task_dataset).upper()
         exp_name += "DESC=%s - " % args.description
     elif args.job == 'testing':
         exp_name += 'TEST - '
         exp_name += "MODEL=%s - " % args.model_type.upper()
-        exp_name += "DATA=%s - " % str(args.task_dataset).upper()
+        exp_name += "DATA=%s - " % list_to_str_wandb(args.task_dataset).upper()
         exp_name += "DESC=%s - " % args.description
     exp_name += "TS=%s" % ts
 
@@ -117,7 +117,7 @@ def get_wandb_exp_name(args: argparse.Namespace):
 
     exp_name = str()
     exp_name += "%s - " % args.task.upper()
-    exp_name += "%s / " % str(args.task_dataset).upper()
+    exp_name += "%s / " % list_to_str_wandb(args.task_dataset).upper()
     exp_name += "%s" % args.model_type.upper()
 
     if args.job in ['training', 'resume_training']:
@@ -173,3 +173,16 @@ def parse_bool(value: str):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
+
+def list_to_str_wandb(list_: list):
+    if type(list_) == str:
+        return list_
+
+    # get common prefix
+    prefix = os.path.commonprefix(list_)
+
+    # remove common prefix from each element
+    list_ = [x.replace(prefix, '') for x in list_]
+
+    # join the list with '+'
+    return prefix + '+'.join(list_)

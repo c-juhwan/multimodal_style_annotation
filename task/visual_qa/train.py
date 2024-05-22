@@ -19,7 +19,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from model.visual_qa.dataset import VQADataset, collate_fn
 from model.optimizer.optimizer import get_optimizer
 from model.optimizer.scheduler import get_scheduler
-from utils.utils import TqdmLoggingHandler, write_log, get_tb_exp_name, get_wandb_exp_name, get_torch_device, check_path
+from utils.utils import TqdmLoggingHandler, write_log, get_tb_exp_name, get_wandb_exp_name, get_torch_device, check_path, list_to_str
 
 def training(args: argparse.Namespace) -> None:
     device = get_torch_device(args.device)
@@ -92,7 +92,7 @@ def training(args: argparse.Namespace) -> None:
     start_epoch = 0
     if args.job == 'resume_training':
         write_log(logger, "Resuming training model")
-        load_checkpoint_name = os.path.join(args.checkpoint_path, args.task, args.task_dataset,
+        load_checkpoint_name = os.path.join(args.checkpoint_path, args.task, list_to_str_wandb(args.task_dataset),
                                             f'{args.model_type}_checkpoint.pt')
         model = model.to('cpu')
         checkpoint = torch.load(load_checkpoint_name, map_location='cpu')
@@ -112,7 +112,7 @@ def training(args: argparse.Namespace) -> None:
                        config=args,
                        notes=args.description,
                        tags=["TRAIN",
-                             f"Dataset: {args.task_dataset}",
+                             f"Dataset: {list_to_str_wandb(args.task_dataset)}",
                              f"Model: {args.model_type}"],
                        resume=True,
                        id=checkpoint['wandb_id'])
@@ -132,7 +132,7 @@ def training(args: argparse.Namespace) -> None:
                    config=args,
                    notes=args.description,
                    tags=["TRAIN",
-                         f"Dataset: {args.task_dataset}",
+                         f"Dataset: {list_to_str_wandb(args.task_dataset)}",
                          f"Model: {args.model_type}"])
 
     # Train/Valid - Start training
@@ -223,7 +223,7 @@ def training(args: argparse.Namespace) -> None:
             write_log(logger, f"VALID - Saving checkpoint for best valid {args.optimize_objective}...")
             early_stopping_counter = 0 # Reset early stopping counter
 
-            checkpoint_save_path = os.path.join(args.checkpoint_path, args.task, args.task_dataset)
+            checkpoint_save_path = os.path.join(args.checkpoint_path, args.task, list_to_str_wandb(args.task_dataset))
             check_path(checkpoint_save_path)
 
             torch.save({
@@ -265,7 +265,7 @@ def training(args: argparse.Namespace) -> None:
         writer.close()
 
     # Final - Save best checkpoint as result model
-    final_model_save_path = os.path.join(args.model_path, args.task, args.task_dataset)
+    final_model_save_path = os.path.join(args.model_path, args.task, list_to_str_wandb(args.task_dataset))
     check_path(final_model_save_path)
     shutil.copyfile(os.path.join(checkpoint_save_path, f'{args.model_type}_checkpoint.pt'),
                     os.path.join(final_model_save_path, f'{args.model_type}_final_model.pt')) # Copy best checkpoint as final model

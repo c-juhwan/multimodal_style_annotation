@@ -18,7 +18,7 @@ from torch.utils.tensorboard import SummaryWriter
 # Custom Modules
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from model.visual_entailment.dataset import VEDataset, collate_fn
-from utils.utils import TqdmLoggingHandler, write_log, get_tb_exp_name, get_wandb_exp_name, get_torch_device, check_path
+from utils.utils import TqdmLoggingHandler, write_log, get_tb_exp_name, get_wandb_exp_name, get_torch_device, check_path, list_to_str_wandb
 
 def testing(args: argparse.Namespace) -> None:
     device = get_torch_device(args.device)
@@ -84,7 +84,7 @@ def testing(args: argparse.Namespace) -> None:
                                'claude-3-opus-20240229', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307',
                                'gemini-1.0-pro-vision-latest', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest']:
         write_log(logger, "Loading model weights")
-        load_model_name = os.path.join(args.model_path, args.task, args.task_dataset,
+        load_model_name = os.path.join(args.model_path, args.task, list_to_str_wandb(args.task_dataset),
                                     f'{args.model_type}_final_model.pt')
         model = model.to('cpu')
         checkpoint = torch.load(load_model_name, map_location='cpu')
@@ -107,7 +107,7 @@ def testing(args: argparse.Namespace) -> None:
                        config=args,
                        notes=args.description,
                        tags=["TEST",
-                             f"Training_Dataset: {args.task_dataset}",
+                             f"Training_Dataset: {list_to_str_wandb(args.task_dataset)}",
                              f"Test_Dataset: {args.test_dataset}",
                              f"Model: {args.model_type}"])
 
@@ -155,7 +155,7 @@ def testing(args: argparse.Namespace) -> None:
         'test_accuracy': test_acc,
         'result_list': result_list
     }
-    save_name = os.path.join(save_path, f'test_result_{args.model_type}_{args.task_dataset}.json')
+    save_name = os.path.join(save_path, f'test_result_{args.model_type}_{list_to_str_wandb(args.task_dataset)}.json')
     with open(save_name, 'w') as f:
         json.dump(result_dict, f, indent=4, ensure_ascii=False)
 
@@ -165,7 +165,7 @@ def testing(args: argparse.Namespace) -> None:
 
     if args.use_wandb:
         wandb_df = pd.DataFrame({
-            'Training_Dataset': [args.task_dataset],
+            'Training_Dataset': [list_to_str_wandb(args.task_dataset)],
             'Test_Dataset': [args.test_dataset],
             'Model': [args.model_type],
             'Average_Accuracy': [test_acc]
