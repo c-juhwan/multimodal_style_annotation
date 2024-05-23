@@ -57,5 +57,7 @@ class LLaVALLaMA3VQAModel(nn.Module):
                 preds.append("yes")
             elif "no" in text.lower():
                 preds.append("no")
+            else:
+                preds.append("unknown")
 
         return preds

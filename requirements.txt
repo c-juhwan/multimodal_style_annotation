@@ -30,3 +30,5 @@ timm==0.9.16
 anthropic==0.26.1
 pycocoevalcap
 google-generativeai
+fairscale==0.4.13
+# BARTScore, BLIP

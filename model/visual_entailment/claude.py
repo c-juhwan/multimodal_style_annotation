@@ -33,7 +33,7 @@ class ClaudeVEModel(nn.Module):
                     model=self.args.gpt_model_version,
                     system="You are a helpful AI assistant that helps visual entailment tasks.",
                     messages=user_prompt,
-                    max_tokens=100,
+                    max_tokens=10,
                 )
 
                 # parse the response

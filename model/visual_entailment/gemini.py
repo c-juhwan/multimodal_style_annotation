@@ -14,11 +14,34 @@ import google.generativeai as genai
 genai.configure(api_key=os.environ['GOOGLE_API_KEY'])
 from PIL import PngImagePlugin
 
+safety_settings=[
+    {
+        "category": "HARM_CATEGORY_DANGEROUS",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_NONE",
+    },
+]
+
 class GeminiVEModel(nn.Module):
     def __init__(self, args: argparse.Namespace) -> None:
         super(GeminiVEModel, self).__init__()
         self.args = args
-        self.model = genai.GenerativeModel(self.args.gpt_model_version)
+        self.model = genai.GenerativeModel(self.args.gpt_model_version, safety_settings=safety_settings)
 
         assert self.args.batch_size == 1, "Batch size must be 1 for Gemini"
 

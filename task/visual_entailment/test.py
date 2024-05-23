@@ -53,19 +53,28 @@ def testing(args: argparse.Namespace) -> None:
     elif args.model_type in ['blip', 'blip_tuned']:
         from model.visual_entailment.blip import BLIPVEModel
         model = BLIPVEModel(args)
-    elif args.model_type == 'blip2':
+    elif args.model_type in ['blip2', 'blip2_xxl']:
         from model.visual_entailment.blip2 import BLIP2VEModel
         model = BLIP2VEModel(args)
+    elif args.model_type == 'instructblip':
+        from model.captioning.instructblip import InstructBlipCaptioningModel
+        model = InstructBlipCaptioningModel(args)
+    elif args.model_type == 'llava_15_vicuna':
+        from model.visual_entailment.llava_15_vicuna import LLaVA15VicunaVEModel
+        model = LLaVA15VicunaVEModel(args)
     elif args.model_type == 'llava_mistral':
         from model.visual_entailment.llava_mistral import LLaVAMistralVEModel
         model = LLaVAMistralVEModel(args)
+    elif args.model_type == 'llava_vicuna':
+        from model.visual_entailment.llava_vicuna import LLaVAVicunaVEModel
+        model = LLaVAVicunaVEModel(args)
     elif args.model_type == 'llava_llama3':
         from model.visual_entailment.llava_llama3 import LLaVALLaMA3VEModel
         model = LLaVALLaMA3VEModel(args)
     elif args.model_type == 'paligemma':
         from model.visual_entailment.paligemma import PaliGemmaVEModel
         model = PaliGemmaVEModel(args)
-    elif args.model_type in ['gpt-4o', 'gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-0125-preview', 'gpt-4-1106-vision-preview']:
+    elif args.model_type in ['gpt-4o', 'gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-1106-vision-preview']:
         from model.visual_entailment.gpt4 import GPT4VEModel
         model = GPT4VEModel(args)
     elif args.model_type in ['claude-3-opus-20240229', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307']:
@@ -79,8 +88,9 @@ def testing(args: argparse.Namespace) -> None:
     model.to(device)
 
     # Load model weights
-    if args.model_type not in ['blip_tuned', 'blip2', 'llava_mistral', 'llava_llama3', 'paligemma',
-                               'gpt-4o', 'gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-0125-preview', 'gpt-4-1106-vision-preview',
+    if args.model_type not in ['blip_tuned', 'blip2', 'blip2_xxl',  'paligemma', 'instructblip',
+                               'llava_15_vicuna', 'llava_vicuna',  'llava_mistral', 'llava_llama3',
+                               'gpt-4o', 'gpt-4o-2024-05-13', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09', 'gpt-4-1106-vision-preview',
                                'claude-3-opus-20240229', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307',
                                'gemini-1.0-pro-vision-latest', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest']:
         write_log(logger, "Loading model weights")

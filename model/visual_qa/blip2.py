@@ -13,8 +13,14 @@ class BLIP2VQAModel(nn.Module):
         super(BLIP2VQAModel, self).__init__()
         self.args = args
 
-        self.processor = AutoProcessor.from_pretrained("Salesforce/blip2-flan-t5-xl")
-        self.model = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-flan-t5-xl")
+        if args.model_type == 'blip2':
+            self.processor = AutoProcessor.from_pretrained("Salesforce/blip2-flan-t5-xl")
+            self.model = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-flan-t5-xl")
+        elif args.model_type == 'blip2_xxl':
+            self.processor = AutoProcessor.from_pretrained("Salesforce/blip2-flan-t5-xxl")
+            self.model = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-flan-t5-xxl")
+        else:
+            raise ValueError(f"Invalid model type: {args.model_type}")
 
         self.transform_train = transforms.Compose([
             transforms.Resize(args.image_resize_size), # Resize to 256x256
