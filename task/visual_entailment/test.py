@@ -57,8 +57,8 @@ def testing(args: argparse.Namespace) -> None:
         from model.visual_entailment.blip2 import BLIP2VEModel
         model = BLIP2VEModel(args)
     elif args.model_type == 'instructblip':
-        from model.captioning.instructblip import InstructBlipCaptioningModel
-        model = InstructBlipCaptioningModel(args)
+        from model.visual_entailment.instructblip import InstructBlipVEModel
+        model = InstructBlipVEModel(args)
     elif args.model_type == 'llava_15_vicuna':
         from model.visual_entailment.llava_15_vicuna import LLaVA15VicunaVEModel
         model = LLaVA15VicunaVEModel(args)

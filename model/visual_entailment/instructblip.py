@@ -46,7 +46,7 @@ class InstructBlipVEModel(nn.Module):
                                                 early_stopping=True)
 
         generated_text = self.processor.tokenizer.batch_decode(generated_outputs, skip_special_tokens=True)
-        generated_text = [text.split("ASSISTANT:")[1] for text in generated_text]
+        # generated_text = [text.split("ASSISTANT:")[1] for text in generated_text]
         generated_text = [text.strip() for text in generated_text]
 
         preds = []
