@@ -209,8 +209,11 @@ class ViTCrossCaptioningModel(nn.Module):
             target_pos_tag = [token.text for token in target_pos_tag if token.pos_ in ['NOUN', 'VERB', 'ADJ']]
             target_pos_tag = [word for word in target_pos_tag if word not in stop_words]
 
-        visual_word_IoU = round(len(set(self.anchor_pos_tag) & set(target_pos_tag)) /
-                                len(set(self.anchor_pos_tag) | set(target_pos_tag)), 4)
+        try:
+            visual_word_IoU = round(len(set(self.anchor_pos_tag) & set(target_pos_tag)) /
+                                    len(set(self.anchor_pos_tag) | set(target_pos_tag)), 4)
+        except ZeroDivisionError:
+            visual_word_IoU = 0
 
         return visual_word_IoU, target_pos_tag
 
