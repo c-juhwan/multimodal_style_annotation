@@ -28,6 +28,7 @@ class GPT4VQAModel(nn.Module):
         user_prompt = self._attach_image_to_prompt(system_prompt, image[0], question[0])
 
         preds = []
+        error_count = 0
         while True:
             try:
                 response = self.client.chat.completions.create(
@@ -37,12 +38,15 @@ class GPT4VQAModel(nn.Module):
 
                 # parse the response
                 generated_text = response.choices[0].message.content
-                if generated_text.lower().startswith("yes"):
+                if generated_text.strip().lower().startswith("yes"):
                     preds.append("yes")
-                elif generated_text.lower().startswith("no"):
+                elif generated_text.strip().lower().startswith("no"):
                     preds.append("no")
                 else:
-                    continue # try again
+                    error_count += 1
+                    if error_count > 5:
+                        preds.append("error")
+                    continue
                 break
             except Exception as e:
                 # If failed to get a response or failed to parse the response, retry

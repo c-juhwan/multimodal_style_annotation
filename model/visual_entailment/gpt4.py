@@ -37,9 +37,9 @@ class GPT4VEModel(nn.Module):
 
                 # parse the response
                 generated_text = response.choices[0].message.content
-                if generated_text.lower().startswith("true"):
+                if generated_text.strip().lower().startswith("true"):
                     preds.append(0)
-                elif generated_text.lower().startswith("false"):
+                elif generated_text.strip().lower().startswith("false"):
                     preds.append(2)
                 else:
                     preds.append(1)

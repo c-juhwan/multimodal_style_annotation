@@ -26,24 +26,29 @@ class ClaudeVQAModel(nn.Module):
     def generate(self, image, question):
         user_prompt = self._attach_image_to_prompt(image[0], question[0])
 
-        preds=[]
+        preds = []
+        error_count = 0
         while True:
             try:
                 response = self.client.messages.create(
                     model=self.args.gpt_model_version,
-                    system="You are a helpful AI assistant that helps visual question answering tasks.",
+                    system="You are a helpful AI assistant that helps visual question answering tasks. You must start the answer in the form of 'Yes' or 'No'.",
                     messages=user_prompt,
                     max_tokens=10,
                 )
 
                 # parse the response
                 generated_text = response.content[0].text
-                if generated_text.lower().startswith("yes"):
+                tqdm.write(f"Generated Text: {generated_text}")
+                if generated_text.strip().lower().startswith("yes"):
                     preds.append("yes")
-                elif generated_text.lower().startswith("no"):
+                elif generated_text.strip().lower().startswith("no"):
                     preds.append("no")
                 else:
-                    continue # try again
+                    error_count += 1
+                    if error_count > 5:
+                        preds.append("error")
+                    continue
                 break
             except Exception as e:
                 # If failed to get a response or failed to parse the response, retry

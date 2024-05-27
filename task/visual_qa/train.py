@@ -19,7 +19,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from model.visual_qa.dataset import VQADataset, collate_fn
 from model.optimizer.optimizer import get_optimizer
 from model.optimizer.scheduler import get_scheduler
-from utils.utils import TqdmLoggingHandler, write_log, get_tb_exp_name, get_wandb_exp_name, get_torch_device, check_path, list_to_str
+from utils.utils import TqdmLoggingHandler, write_log, get_tb_exp_name, get_wandb_exp_name, get_torch_device, check_path, list_to_str_wandb
 
 def training(args: argparse.Namespace) -> None:
     device = get_torch_device(args.device)
