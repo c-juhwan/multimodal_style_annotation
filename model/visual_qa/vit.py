@@ -19,7 +19,7 @@ class ViTVQAModel(nn.Module):
         self.text_tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 
         self.image_encoder = ViTModel.from_pretrained("google/vit-base-patch16-224-in21k")
-        self.text_encoder = BertModel.from_pretrained("bert-base-uncased", is_decoder=True, add_cross_attention=True)
+        self.text_encoder = BertModel.from_pretrained("bert-base-uncased")
 
         self.transform_train = transforms.Compose([
             transforms.Resize(args.image_resize_size), # Resize to 256x256
@@ -58,8 +58,7 @@ class ViTVQAModel(nn.Module):
         image_encoder_output = self.image_encoder(pixel_values=pixel_values)["last_hidden_state"]
         text_encoder_output = self.text_encoder(input_ids=text_encoder_input["input_ids"],
                                                 attention_mask=text_encoder_input["attention_mask"],
-                                                token_type_ids=text_encoder_input["token_type_ids"],
-                                                encoder_hidden_states=image_encoder_output)["last_hidden_state"][:, 0, :] # CLS token
+                                                token_type_ids=text_encoder_input["token_type_ids"])["last_hidden_state"][:, 0, :] # CLS token
         image_encoder_output = image_encoder_output[:, 0, :] # CLS token
 
         combined_output = torch.cat((image_encoder_output, text_encoder_output), dim=1)
@@ -67,10 +66,12 @@ class ViTVQAModel(nn.Module):
 
         target_tensor = torch.tensor(target, dtype=torch.long, device=self.args.device)
         loss = self.loss_func(logits, target_tensor)
+        accuracy = (logits.argmax(-1) == target_tensor).sum().item() / len(target)
 
         output = {
             'logits': logits,
-            'loss': loss
+            'loss': loss,
+            'accuracy': accuracy
         }
         return output
 
@@ -79,7 +80,7 @@ class ViTVQAModel(nn.Module):
 
         pixel_values = self.image_processor(images=transformed_image, return_tensors="pt",
                                               do_resize=False, do_rescale=True, do_normalize=True).pixel_values
-        input_prompt = [f"each_question" for each_question in question]
+        input_prompt = [f"{each_question}" for each_question in question]
         text_encoder_input = self.text_tokenizer(input_prompt, padding="longest", return_tensors="pt")
 
         pixel_values = pixel_values.to(self.args.device)
@@ -88,8 +89,7 @@ class ViTVQAModel(nn.Module):
         image_encoder_output = self.image_encoder(pixel_values=pixel_values)["last_hidden_state"]
         text_encoder_output = self.text_encoder(input_ids=text_encoder_input["input_ids"],
                                                 attention_mask=text_encoder_input["attention_mask"],
-                                                token_type_ids=text_encoder_input["token_type_ids"],
-                                                encoder_hidden_states=image_encoder_output)["last_hidden_state"][:, 0, :] # CLS token
+                                                token_type_ids=text_encoder_input["token_type_ids"])["last_hidden_state"][:, 0, :] # CLS token
         image_encoder_output = image_encoder_output[:, 0, :] # CLS token
 
         combined_output = torch.cat((image_encoder_output, text_encoder_output), dim=1)

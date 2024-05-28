@@ -50,6 +50,7 @@ def training(args: argparse.Namespace) -> None:
     else:
         dataset_dict['train'] = VQADataset(os.path.join(args.preprocess_path, args.task_dataset, f'train_data.pkl'))
         dataset_dict['valid'] = VQADataset(os.path.join(args.preprocess_path, args.task_dataset, f'valid_data.pkl'))
+    #dataset_dict['train'].data_list = dataset_dict['train'].data_list[:100]
     dataloader_dict['train'] = DataLoader(dataset_dict['train'], batch_size=args.batch_size, num_workers=args.num_workers,
                                           shuffle=True, pin_memory=True, drop_last=True, collate_fn=collate_fn)
     dataloader_dict['valid'] = DataLoader(dataset_dict['valid'], batch_size=args.batch_size, num_workers=args.num_workers,
@@ -145,6 +146,7 @@ def training(args: argparse.Namespace) -> None:
         # Train - Set model to train mode
         model = model.train()
         train_loss_seq = 0
+        train_acc_seq = 0
 
         # Train - Iterate one epoch over batches
         for iter_idx, data_dicts in enumerate(tqdm(dataloader_dict['train'], total=len(dataloader_dict['train']), desc=f'Training - Epoch [{epoch_idx}/{args.num_epochs}]')):
@@ -158,6 +160,7 @@ def training(args: argparse.Namespace) -> None:
             # Train - Forward pass
             outputs = model(images, questions, answers, captions, domain_ids)
             batch_loss_seq = outputs['loss']
+            batch_acc_seq = outputs['accuracy']
 
             # Train - Backward pass
             optimizer.zero_grad()
@@ -170,8 +173,9 @@ def training(args: argparse.Namespace) -> None:
 
             # Train - Logging
             train_loss_seq += batch_loss_seq.item()
+            train_acc_seq += batch_acc_seq
             if iter_idx % args.log_freq == 0 or iter_idx == len(dataloader_dict['train']) - 1:
-                write_log(logger, f"TRAIN - Epoch [{epoch_idx}/{args.num_epochs}] - Iter [{iter_idx}/{len(dataloader_dict['train'])}] - Loss: {batch_loss_seq.item():.4f}")
+                write_log(logger, f"TRAIN - Epoch [{epoch_idx}/{args.num_epochs}] - Iter [{iter_idx}/{len(dataloader_dict['train'])}] - Loss: {batch_loss_seq.item():.4f} - Acc: {batch_acc_seq:.4f}")
             if args.use_tensorboard:
                 writer.add_scalar('TRAIN/Learning_Rate', optimizer.param_groups[0]['lr'], epoch_idx * len(dataloader_dict['train']) + iter_idx)
 
@@ -182,6 +186,7 @@ def training(args: argparse.Namespace) -> None:
         # Valid - Set model to eval mode
         model = model.eval()
         valid_loss_seq = 0
+        valid_acc_seq = 0
 
         # Valid - Iterate one epoch over batches
         for iter_idx, data_dicts in enumerate(tqdm(dataloader_dict['valid'], total=len(dataloader_dict['valid']), desc=f'Validating - Epoch [{epoch_idx}/{args.num_epochs}]')):
@@ -196,11 +201,13 @@ def training(args: argparse.Namespace) -> None:
             with torch.no_grad():
                 outputs = model(images, questions, answers, captions, domain_ids)
                 batch_loss_seq = outputs['loss']
+                batch_acc_seq = outputs['accuracy']
 
             # Valid - Logging
             valid_loss_seq += batch_loss_seq.item()
+            valid_acc_seq += batch_acc_seq
             if iter_idx % args.log_freq == 0 or iter_idx == len(dataloader_dict['valid']) - 1:
-                write_log(logger, f"VALID - Epoch [{epoch_idx}/{args.num_epochs}] - Iter [{iter_idx}/{len(dataloader_dict['valid'])}] - Loss: {batch_loss_seq.item():.4f}")
+                write_log(logger, f"VALID - Epoch [{epoch_idx}/{args.num_epochs}] - Iter [{iter_idx}/{len(dataloader_dict['valid'])}] - Loss: {batch_loss_seq.item():.4f} - Acc: {batch_acc_seq:.4f}")
 
         # Valid - Call scheduler
         if args.scheduler == 'LambdaLR':
@@ -210,10 +217,13 @@ def training(args: argparse.Namespace) -> None:
 
         # Valid - Check loss & save model
         valid_loss_seq /= len(dataloader_dict['valid'])
+        valid_acc_seq /= len(dataloader_dict['valid'])
 
         if args.optimize_objective == 'loss':
             valid_objective_value = valid_loss_seq
             valid_objective_value = -1 * valid_objective_value # Loss is minimized, but we want to maximize the objective value
+        elif args.optimize_objective == 'accuracy':
+            valid_objective_value = valid_acc_seq
         else:
             raise NotImplementedError
 
@@ -244,7 +254,9 @@ def training(args: argparse.Namespace) -> None:
             writer.add_scalar('VALID/Loss', valid_loss_seq, epoch_idx)
         if args.use_wandb:
             wandb.log({'TRAIN/Epoch_Loss': train_loss_seq / len(dataloader_dict['train']),
-                       'VALID/Epoch_Loss': valid_loss_seq,\
+                       'TRAIN/Epoch_Acc': train_acc_seq / len(dataloader_dict['train']),
+                       'VALID/Epoch_Loss': valid_loss_seq,
+                       'VALID/Epoch_Acc': valid_acc_seq,
                        'Epoch_Index': epoch_idx})
             wandb.alert(
                 title='Epoch End',

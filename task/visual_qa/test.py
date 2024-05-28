@@ -162,16 +162,10 @@ def testing(args: argparse.Namespace) -> None:
     # Test - Calculate accuracy
     for each_result in result_list:
         pred = process_text(each_result['generated_answer'])
-        human_answers = [each_answer['answer'] for each_answer in each_result['full_answer']]
-        ground_truths = [process_text(each_answer) for each_answer in human_answers]
+        gold = process_text(each_result['gold_answer'])
 
-        matching_answer = []
-        for each_ground_truth in ground_truths:
-            if each_ground_truth == pred:
-                matching_answer.append(each_ground_truth)
-
-        accuracy = min(1, float(len(matching_answer)) / 3)
-        result_list[result_list.index(each_result)]['accuracy'] = accuracy
+        accuracy = 1 if pred == gold else 0
+        each_result['accuracy'] = accuracy
     average_accuracy = sum([each_result['accuracy'] for each_result in result_list]) / len(result_list)
 
     # Final - End of testing
