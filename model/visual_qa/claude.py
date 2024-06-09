@@ -48,6 +48,7 @@ class ClaudeVQAModel(nn.Module):
                     error_count += 1
                     if error_count > 5:
                         preds.append("error")
+                        break
                     continue
                 break
             except Exception as e:
