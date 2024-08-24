@@ -4,7 +4,7 @@
 
 This repository contains the source code for the paper ["VolDoGer: LLM-assisted Datasets for Domain Generalization in Vision-Language Tasks"](https://arxiv.org/pdf/2407.19795). We propose data annotation scheme for vision-language tasks using large language models (LLMs). Especially, we focus on the stylistic domain generalization in vision-language tasks. We demonstrate that our method can effectively generate the stylistic domain generalization dataset. Please refer to the paper for more details.
 
-![Figure](./voldoger_figure.png)
+![Figure](./voldoger_figure.jpg)
 
 ## Experiment
 
